@@ -4,10 +4,12 @@ import comp124graphics.GraphicsObject;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Objects;
+
 /**
  * Created by Rohit Bagda on 11/25/2017.
  */
-public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener {
+public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener, ActionListener {
 
 
     private Board gameBoard;
@@ -19,10 +21,13 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private double boardLength;
     private boolean gameRunning;
     private int solution[];
-
+    private int canvasWidth;
+    private int pauseTime;
 
     private final double EDGE_GAP = 10;
     private final double CEILING_GAP = 75;
+
+    private JButton showSolution;
 
 
 
@@ -34,17 +39,21 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         this.n=n;
         boardLength=canvasWidth;
         gameRunning=false;
+        this.canvasWidth=canvasWidth;
 
         drawBoard();
-        addPlayButton();
-        addResetButton();
-        addShowSolution();
+        int buttonWidth = 100;
+        int buttonHeight = 40;
+        int buttonGap = 5;
+        int topGap = 20;
+        addAllButtons(buttonWidth, buttonHeight, topGap, (canvasWidth/2)-(buttonWidth/2)-buttonWidth, buttonGap);
         addMouseListener(this);
+
 
         int[][] A = createMatrix();
         elimination = new GaussianElimination(A);
         solution = elimination.findSolution(A);
-        carryOutSolution(solution);
+        //carryOutSolution(solution);
     }
 
     public void drawBoard(){
@@ -52,21 +61,35 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         add(gameBoard);
     }
 
-    public void addResetButton(){
-        Button button = new Button(0, 0, 40, 40, "reset");
-        add(button);
+    public void addAllButtons(int buttonWidth, int buttonHeight, int topGap, int leftGap, int buttonGap){
+        addResetButton(buttonWidth, buttonHeight, leftGap, topGap);
+        addShowSolutionButton(buttonWidth, buttonHeight, leftGap+buttonWidth+buttonGap, topGap);
+        addPlayButton(buttonWidth, buttonHeight, leftGap+buttonWidth*2+buttonGap + buttonGap, topGap);
     }
 
-    public void addPlayButton(){
-        Button button = new Button(80, 0, 40, 40, "play");
-        button.setFillColor(Color.BLUE);
-        add(button);
+    public void addResetButton(int buttonWidth, int buttonHeight, int x, int y){
+        JButton reset = new JButton("Reset");
+        reset.setLocation(x, y);
+        reset.setSize(buttonWidth,buttonHeight);
+        add(reset);
+        reset.addActionListener(this);
     }
 
-    public void addShowSolution(){
-        Button button = new Button(180, 0, 40, 40, "show solution");
-        button.setFillColor(Color.CYAN);
-        add(button);
+    public void addPlayButton(int buttonWidth, int buttonHeight, int x, int y){
+        JButton play = new JButton("Visualize");
+        play.setLocation(x,y);
+        play.setSize(buttonWidth,buttonHeight);
+        add(play);
+        play.addActionListener(this);
+    }
+
+
+    public void addShowSolutionButton(int buttonWidth, int buttonHeight, int x, int y){
+        showSolution = new JButton("Show Solution");
+        showSolution.setLocation(x,y);
+        showSolution.setSize(buttonWidth,buttonHeight);
+        add(showSolution);
+        showSolution.addActionListener(this);
     }
 
     public int[][] createMatrix() {
@@ -108,9 +131,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         return matrix;
     }
 
+    public void setupJavaTimer() {
+        timer = new Timer(pauseTime, new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                timer.stop();
+            }
+        });
+    }
+
     private int calculatePauseTime(){
 
-        int pauseTime=0;
+        pauseTime=0;
         if(n<10){
             pauseTime = 500;
         } else if(n<20){
@@ -127,8 +158,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         int row;
         int column;
         int l=vector.length;
-        int pauseTime=calculatePauseTime();
-        int mainBulbToggleTime=pauseTime/2;
+        long pauseTime=calculatePauseTime();
+        long mainBulbToggleTime=pauseTime/2;
 
         for (int i=0;i<l;i++){
 
@@ -141,7 +172,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
-    private void toggleNeighbors(int row, int column, int mainBulbToggleTime, int pauseTime){
+    private void toggleNeighbors(int row, int column, long mainBulbToggleTime, long pauseTime){
 
         gameBoard.getBulbAt(row,column).setFillColor(Color.RED);
         pause(mainBulbToggleTime);
@@ -167,9 +198,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         if(row!=n-1){
             gameBoard.getBulbAt(row+1, column).toggle();
         }
-
         pause(pauseTime);
-
     }
     public void showSolution(int[] vector){
         currentBulbColors=new Color[vector.length];
@@ -197,15 +226,19 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
-    public void performButtonOperation(GraphicsObject obj){
-        if (obj instanceof Button && ((Button)obj).getName().equals("reset")) {
+
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("Reset")) {
             remove(gameBoard);
             drawBoard();
         }
-        if (obj instanceof Button && ((Button)obj).getName().equals("play")){
+        if(cmd.equals("Visualize")){
             carryOutSolution(solution);
         }
-        System.out.println("Bulb Toggled");
+        if(cmd.equals("Show Solution")){
+            showSolution(solution);
+        }
     }
 
     @Override
@@ -213,24 +246,24 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         int x = e.getX();
         int y = e.getY();
         checkBoardClicked(x,y);
-        GraphicsObject obj = getElementAt(x, y);
-        performButtonOperation(obj);
+//        GraphicsObject obj = getElementAt(x, y);
+//        performButtonOperation(obj);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        GraphicsObject obj = getElementAt(e.getX(),e.getY());
-        if(obj instanceof Button && ((Button) obj).getName().equals("show solution")){
-            showSolution(solution);
-        }
+//        Object obj = getComponentAt(e.getX(),e.getY());
+//        if(obj instanceof JButton && ((JButton) obj).getText().equals("Show Solution")){
+//            showSolution(solution);
+//        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        GraphicsObject obj = getElementAt(e.getX(),e.getY());
-        if(obj instanceof Button && ((Button) obj).getName().equals("show solution")){
-            dontShowSolution(solution);
-        }
+//        Object obj = getComponentAt(e.getX(),e.getY());
+//        if(!(obj instanceof JButton && ((JButton) obj).getName().equals("show solution"))){
+//            dontShowSolution(solution);
+//        }
     }
 
     @Override
@@ -252,7 +285,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     public void mouseMoved(MouseEvent e) {
     }
 
-
     public static void main(String args[]){
         int dimension;
 //        Scanner scan = new Scanner(System.in);
@@ -264,4 +296,5 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 //        }
 
     }
+
 }
