@@ -1,4 +1,5 @@
-import comp124graphics.*;
+import comp124graphics.CanvasWindow;
+import comp124graphics.GraphicsObject;
 
 import javax.swing.*;
 import java.awt.*;
