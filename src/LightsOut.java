@@ -19,13 +19,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private boolean gameRunning;
     private int solution[];
 
+
     private final double EDGE_GAP = 10;
     private final double CEILING_GAP = 75;
 
 
 
     public LightsOut(int canvasWidth, int canvasHeight, int n){
-        super("Lights Out!", canvasWidth, canvasHeight);
+        super("Lights Out!", canvasWidth, canvasWidth+75);
+        Color backGroundColor = new Color(29,111,140);
+
+        super.setBackground(backGroundColor);
         this.n=n;
         boardLength=canvasWidth;
         gameRunning=false;
