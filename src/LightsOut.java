@@ -59,7 +59,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     public void addShowSolution(){
-        Button button = new Button(180, 0, 50, 50, "show solution");
+        Button button = new Button(180, 0, 40, 40, "show solution");
         button.setFillColor(Color.CYAN);
         add(button);
     }
@@ -103,27 +103,27 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         return matrix;
     }
 
+    private int calculatePauseTime(){
+
+        int pauseTime=0;
+        if(n<10){
+            pauseTime = 500;
+        } else if(n<20){
+            pauseTime = 200;
+        } else if(n<50){
+            pauseTime = 100;
+        } else if(n<100){
+            pauseTime = 50;
+        }
+        return pauseTime;
+    }
 
     public void carryOutSolution(int[] vector){
         int row;
         int column;
         int l=vector.length;
-        int pauseTime=0;
-        int mainBulbToggleTime=0;
-
-        if(n<10){
-            pauseTime = 500;
-            mainBulbToggleTime=200;
-        } else if(n<20){
-            pauseTime = 200;
-            mainBulbToggleTime=100;
-        } else if(n<50){
-            pauseTime = 100;
-            mainBulbToggleTime=50;
-        } else if(n<100){
-            pauseTime = 50;
-            mainBulbToggleTime=25;
-        }
+        int pauseTime=calculatePauseTime();
+        int mainBulbToggleTime=pauseTime/2;
 
         for (int i=0;i<l;i++){
 
@@ -131,36 +131,41 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                 row = i/n;
                 column = i % n;
 
-                gameBoard.getBulbAt(row,column).setFillColor(Color.RED);
-                pause(mainBulbToggleTime);
-                gameBoard.getBulbAt(row,column).setFillColor(Color.YELLOW);
-
-                gameBoard.getBulbAt(row, column).toggle();
-
-                //toggle left neighbor
-                if (column != 0){
-                    gameBoard.getBulbAt(row, column-1).toggle();
-                }
-
-                //toggle right neighbor
-                if(column!=(n-1)){
-                    gameBoard.getBulbAt(row, column+1).toggle();
-                }
-
-                //toggle top neighbor
-                if(row!=0){
-                    gameBoard.getBulbAt(row-1, column).toggle();
-                }
-
-                //toggle Bottom neighbor
-                if(row!=n-1){
-                    gameBoard.getBulbAt(row+1, column).toggle();
-                }
-                pause(pauseTime);
+                toggleNeighbors(row,column, mainBulbToggleTime, pauseTime);
             }
         }
     }
 
+    private void toggleNeighbors(int row, int column, int mainBulbToggleTime, int pauseTime){
+
+        gameBoard.getBulbAt(row,column).setFillColor(Color.RED);
+        pause(mainBulbToggleTime);
+        gameBoard.getBulbAt(row,column).setFillColor(Color.YELLOW);
+        gameBoard.getBulbAt(row, column).toggle();
+
+        //toggle left neighbor
+        if (column != 0){
+            gameBoard.getBulbAt(row, column-1).toggle();
+        }
+
+        //toggle right neighbor
+        if(column!=(n-1)){
+            gameBoard.getBulbAt(row, column+1).toggle();
+        }
+
+        //toggle top neighbor
+        if(row!=0){
+            gameBoard.getBulbAt(row-1, column).toggle();
+        }
+
+        //toggle Bottom neighbor
+        if(row!=n-1){
+            gameBoard.getBulbAt(row+1, column).toggle();
+        }
+
+        pause(pauseTime);
+
+    }
     public void showSolution(int[] vector){
         currentBulbColors=new Color[vector.length];
         for (int i=0; i<vector.length;i++){
@@ -241,6 +246,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     @Override
     public void mouseMoved(MouseEvent e) {
     }
+
 
     public static void main(String args[]){
         int dimension;
