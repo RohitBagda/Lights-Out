@@ -26,7 +26,6 @@ public class Board extends GraphicsGroup{
         board = new Bulb[n][n];
         BULB_GAP = 10;
         bulbLength = (width - ((n+1)*BULB_GAP))/n;
-//        BULB_GAP = width/(100*n);
         createBoard();
     }
     public void createBoard(){
@@ -38,11 +37,7 @@ public class Board extends GraphicsGroup{
             for(int j=0;j<n;j++){
                 Bulb bulb = new Bulb(xPos, yPos, bulbLength, bulbLength, idCounter);
                 board[i][j]=bulb;
-
-                GraphicsText label = new GraphicsText((""+(i*n + j)), (float)(xPos + bulbLength/2 - 5), (float)(yPos + bulbLength/2));
-                //label.setPosition(xPos+bulbLength/2 - label.getWidth()/2, (float)(yPos + bulbLength/2) + label.getHeight()/4);
                 add(bulb);
-                //add(label);
                 xPos+=BULB_GAP+bulbLength;
                 idCounter++;
             }

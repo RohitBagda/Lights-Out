@@ -9,7 +9,7 @@ import java.awt.*;
 public class Bulb extends Rectangle {
 
     boolean isOn;
-    Color onColor, offColor, isSolutionColor;
+    protected Color onColor, offColor, isSolutionColor;
     int id;
     double width, height;
     double XOnCanvas, YOnCanvas;
