@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Created by Rohit Bagda on 11/25/2017.
+ * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 11/25/2017.
  */
 public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener, ActionListener {
 
@@ -22,7 +22,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private int solution[];
     private int canvasWidth;
     private int pauseTime;
-    private int mainBulbToggleTime;
     private int solutionVectCounter;
     private int mainBulbVectCounter;
 
@@ -32,13 +31,12 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private Button showSolutionButton;
 
     private boolean pauseTimerRunning;
-    private boolean mainBulbPauseTimerRunning;
     private boolean showingSolution;
     private int solutionIndicator;
 
 
     public LightsOut(int canvasWidth, int canvasHeight, int n){
-        super("Lights Out!", canvasWidth, canvasWidth+75);
+        super("Lights Out!", canvasWidth, canvasWidth+100);
         Color backGroundColor = new Color(29,111,140);
         super.setBackground(backGroundColor);
         this.n=n;
@@ -49,7 +47,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         int buttonGap = 5;
         int topGap = 20;
         pauseTimerRunning = false;
-        mainBulbPauseTimerRunning=true;
         showingSolution=false;
         solutionIndicator=0;
 
@@ -77,7 +74,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     public void addTextField(int buttonWidth, int buttonHeight, int buttonGap){
-        textField = new JTextField("Enter Dimension");
+        textField = new JTextField("5");
         textField.setSize(buttonWidth,buttonHeight);
         textField.setLocation(canvasWidth-buttonWidth-2*buttonGap-textField.getWidth(), buttonHeight);
         textField.setEditable(true);
@@ -183,25 +180,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
-//    public void carryOutSolution(int[] vector){
-//        int row;
-//        int column;
-//        int l=vector.length;
-//        long pauseTime=calculatePauseTime();
-//        long mainBulbToggleTime=pauseTime/2;
-//
-//        for (int i=0;i<l;i++){
-//
-//            if (vector[i] == 1){
-//                row = i/n;
-//                column = i % n;
-//
-//                toggleNeighbors(row,column, mainBulbToggleTime, pauseTime);
-//            }
-//        }
-//    }
 
-    private void toggleBulbAndNeighbors(int row, int column, long mainBulbToggleTime, long pauseTime){
+    private void toggleBulbAndNeighbors(int row, int column, long pauseTime){
 
         gameBoard.getBulbAt(row, column).toggle();
 
@@ -309,7 +289,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                 gameBoard.getBulbAt(row,column).setFillColor(Color.RED);
 
                 gameBoard.getBulbAt(row,column).setFillColor(Color.YELLOW);
-                toggleBulbAndNeighbors(row,column, mainBulbToggleTime, pauseTime);
+                toggleBulbAndNeighbors(row,column, pauseTime);
 
             }
         }

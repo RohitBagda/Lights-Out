@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * Created by Rohit Bagda on 12/8/2017.
+ * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 12/8/2017.
  */
 
 public class GaussianElimination {
