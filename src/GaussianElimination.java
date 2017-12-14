@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 12/8/2017.
  */
 
-public class GaussianElimination {
+class GaussianElimination {
 
     int OriginalMatrix[][];
 

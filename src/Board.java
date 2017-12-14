@@ -14,7 +14,7 @@ public class Board extends GraphicsGroup{
     private int n;
     private Bulb board[][];
 
-    private double BULB_GAP;
+    protected final double BULB_GAP;
 
 
     public Board(double x, double y, double boardLength, int dimension){
