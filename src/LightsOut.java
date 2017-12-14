@@ -25,6 +25,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
     private final double EDGE_GAP = 10;
     private final double CEILING_GAP = 100;
+    private final int DIMENSION_LIMIT=100;
 
     private boolean pauseTimerRunning;
     private boolean showingSolution;
@@ -53,13 +54,20 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         addTextField(buttonWidth, buttonHeight, topGap);
         addMouseListener(this);
         addKeyListener(this);
-        buildGame();
+        buildGame(n, true);
     }
 
-    private void buildGame(){
+    private void buildGame(int dimensionEntered, boolean nChanged){
+
+        int currentN=n;
+        this.n=dimensionEntered;
         int[][] A = createMatrix();
-        GaussianElimination elimination = new GaussianElimination(A);
-        solution = elimination.findSolution(A);
+        if(nChanged){
+            GaussianElimination elimination = new GaussianElimination(A);
+            solution = elimination.findSolution(A);
+        } else if(n>=DIMENSION_LIMIT){
+            this.n=currentN;
+        }
         drawBoard();
         solutionVectCounter=0;
         mainBulbVectCounter=0;
@@ -89,13 +97,10 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                 textField.requestFocus();
             }
         });
-        textField.addKeyListener(
-                new KeyAdapter()
-                {
-                    public void keyReleased( KeyEvent e )
-                    {
-                        if( e.getKeyCode() == KeyEvent.VK_ENTER )
-                        {
+        textField.addKeyListener(new KeyAdapter() {
+                    public void keyReleased( KeyEvent e ) {
+
+                        if( e.getKeyCode() == KeyEvent.VK_ENTER ) {
                             userChoiceButton.doClick();
                         }
                     }
@@ -264,7 +269,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private void setupJavaTimer() {
         timer = new Timer(pauseTime, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                System.out.println("Timer Updated: " + solutionIndicator);
                 if (pauseTimerRunning && solution[solutionVectCounter]==1&&solutionVectCounter<solution.length) {
                     if(solutionIndicator%3 == 0){
                         visualizeMainBulbColor(solution);
@@ -320,7 +324,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
             if (vector[i] == 1){
                 row = i/n;
                 column = i % n;
-                System.out.println("changing main color");
                 gameBoard.getBulbAt(row,column).setFillColor(Color.RED);
                 if(!showingSolution) {
                     gameBoard.getBulbAt(row, column).setStroked(false);
@@ -337,9 +340,13 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private void rebuildWithNewSize(){
         remove(gameBoard);
         int dimensionEntered=Integer.parseInt(textField.getText());
-        this.n=dimensionEntered;
+
+        boolean nChanged=false;
+        if(dimensionEntered!=n && dimensionEntered<DIMENSION_LIMIT && dimensionEntered>1){
+            nChanged=true;
+        }
         calculatePauseTime();
-        buildGame();
+        buildGame(dimensionEntered, nChanged);
     }
 
 
@@ -371,6 +378,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
             }
         }
         if(cmd.equals("Enter Size")){
+            timer.stop();
+            solutionVectCounter=0;
+            mainBulbVectCounter=0;
+            solutionIndicator=0;
+            pauseTimerRunning=false;
             rebuildWithNewSize();
         }
     }
