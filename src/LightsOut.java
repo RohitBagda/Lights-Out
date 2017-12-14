@@ -1,8 +1,10 @@
 import comp124graphics.CanvasWindow;
 
 import javax.swing.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.NumberFormat;
 
 /**
  * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 11/25/2017.
@@ -12,7 +14,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
     private Board gameBoard;
     private Timer timer;
-    private JTextField textField;
+    private JFormattedTextField textField;
 
     private int n;
     private double boardLength;
@@ -23,9 +25,15 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private int solutionVectCounter;
     private int mainBulbVectCounter;
 
-    private final double EDGE_GAP = 10;
-    private final double CEILING_GAP = 100;
+    private Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    private final int SCREEN_WIDTH=(int)(SCREEN_SIZE.getWidth());
+    private final int SCREEN_HEIGHT=(int)(SCREEN_SIZE.getHeight());
+    private final double EDGE_GAP = SCREEN_WIDTH/(SCREEN_WIDTH/10);
+//    private final double CEILING_GAP = SCREEN_WIDTH/(SCREEN_WIDTH/100);
+    private double CEILING_GAP;
     private final int DIMENSION_LIMIT=100;
+    private final int DEFAULT_DIMENSION=5;
+    private final int FONT_SIZE=SCREEN_WIDTH/128;
 
     private boolean pauseTimerRunning;
     private boolean showingSolution;
@@ -34,24 +42,25 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private JButton userChoiceButton;
 
 
-    private LightsOut(int canvasWidth, int n){
-        super("Lights Out!", canvasWidth, canvasWidth+100);
+    private LightsOut(int canvasWidth, int ceilingGap){
+        super("Lights Out!", canvasWidth, canvasWidth+ceilingGap);
         Color backGroundColor = new Color(29,111,140);
         super.setBackground(backGroundColor);
 
-        this.n=n;
+        this.n=DEFAULT_DIMENSION;
         boardLength=canvasWidth;
         this.canvasWidth=canvasWidth;
-        int buttonWidth = 200;
-        int buttonHeight = 40;
-        int buttonGap = 5;
-        int topGap = 20;
+        int buttonWidth = (int)(SCREEN_WIDTH/12.8);
+        int buttonHeight = SCREEN_WIDTH/96;
+        int buttonGap = SCREEN_WIDTH/384;
+        int topGap = SCREEN_WIDTH/192;
         pauseTimerRunning = false;
         showingSolution=false;
         solutionIndicator=0;
 
+        this.CEILING_GAP=ceilingGap;
         addAllButtons(buttonWidth, buttonHeight, topGap, (canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap, buttonGap);
-        addTextField(buttonWidth, buttonHeight, topGap);
+        addTextField(buttonWidth, buttonHeight, buttonGap);
         addMouseListener(this);
         addKeyListener(this);
         buildGame(n, true);
@@ -82,13 +91,26 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     private void addTextField(int buttonWidth, int buttonHeight, int buttonGap){
-        textField = new JTextField("5");
+        NumberFormat numberFormat = NumberFormat.getInstance();
+        numberFormat.setGroupingUsed(false);
+        SpecialNumberFormatter numberFormatter = new SpecialNumberFormatter(numberFormat);
+        numberFormatter.setValueClass(Integer.class);
+        numberFormatter.setMinimum(0);
+        numberFormatter.setMaximum(DIMENSION_LIMIT);
+        numberFormatter.setAllowsInvalid(false);
+
+        numberFormatter.setCommitsOnValidEdit(true);
+
+        textField = new JFormattedTextField(numberFormatter);
+//        textField.setDocument();
         textField.setSize(buttonWidth,buttonHeight);
-        textField.setLocation(canvasWidth-buttonWidth-2*buttonGap-textField.getWidth(), buttonHeight);
+        textField.setLocation(canvasWidth/2+buttonGap/2, 2*buttonHeight+2*buttonGap);
         textField.setEditable(true);
-        textField.setFont(new Font(null, Font.BOLD, 20));
+        textField.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         add(textField);
         textField.grabFocus();
+        textField.setHorizontalAlignment(JFormattedTextField.CENTER);
+        textField.setText(Integer.toString(DEFAULT_DIMENSION));
         textField.setCaretPosition(textField.getText().length());
         textField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
@@ -112,7 +134,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         addResetButton(buttonWidth, buttonHeight, leftGap, topGap);
         addShowSolutionButton(buttonWidth, buttonHeight, leftGap+buttonWidth+buttonGap, topGap);
         addPlayButton(buttonWidth, buttonHeight, leftGap+buttonWidth*2+buttonGap + buttonGap, topGap);
-        addUserChoiceButton(buttonWidth, buttonHeight, canvasWidth-buttonWidth-buttonGap, buttonHeight );
+        addUserChoiceButton(buttonWidth, buttonHeight, canvasWidth/2 - buttonWidth-buttonGap/2, 2*buttonHeight+2*buttonGap);
     }
 
     private void addUserChoiceButton(int width, int height, int x, int y){
@@ -120,7 +142,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         userChoiceButton.setLocation(x, y);
         userChoiceButton.setSize(width, height);
         userChoiceButton.setText("Enter Size");
-        userChoiceButton.setFont(new Font(null, Font.BOLD, 20));
+        userChoiceButton.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         userChoiceButton.addActionListener(this);
         userChoiceButton.addKeyListener(this);
         add(userChoiceButton);
@@ -131,7 +153,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         reset.setLocation(x, y);
         reset.setSize(buttonWidth,buttonHeight);
         reset.setText("Reset");
-        reset.setFont(new Font(null, Font.BOLD, 20));
+        reset.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         add(reset);
         reset.addActionListener(this);
     }
@@ -141,7 +163,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         play.setLocation(x,y);
         play.setSize(buttonWidth,buttonHeight);
         play.setText("Visualize");
-        play.setFont(new Font(null, Font.BOLD, 20));
+        play.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         play.addActionListener(this);
         add(play);
     }
@@ -153,7 +175,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         showSolutionButton.setSize(buttonWidth,buttonHeight);
         showSolutionButton.setText("Show Solution");
         showSolutionButton.addActionListener(this);
-        showSolutionButton.setFont(new Font(null, Font.BOLD, 20));
+        showSolutionButton.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         add(showSolutionButton);
     }
 
@@ -436,8 +458,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     public static void main(String args[]){
-        int defaultDimension=5;
-        LightsOut lightsOut = new LightsOut(1600, defaultDimension);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double screenWidth=screenSize.getWidth();
+        int canvasWidth=(int)(screenWidth/2.4);
+        int ceilingGap=(int)(screenWidth/(19.2*1.2));
+        LightsOut lightsOut = new LightsOut(1600,ceilingGap);
     }
 
 }
