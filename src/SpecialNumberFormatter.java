@@ -15,6 +15,8 @@ public class SpecialNumberFormatter extends NumberFormatter {
     public Object stringToValue(String str) throws ParseException{
         if (str.equals("")){
             return null;
+        } if (str.length()>2){
+            return Integer.parseInt(str.substring(0,2));
         }
 
         return Integer.parseInt(str);

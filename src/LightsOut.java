@@ -28,7 +28,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private final int SCREEN_WIDTH=(int)(SCREEN_SIZE.getWidth());
     private final int SCREEN_HEIGHT=(int)(SCREEN_SIZE.getHeight());
     private final double EDGE_GAP = SCREEN_WIDTH/(SCREEN_WIDTH/10);
-//    private final double CEILING_GAP = SCREEN_WIDTH/(SCREEN_WIDTH/100);
     private double CEILING_GAP;
     private final int DIMENSION_LIMIT=100;
     private final int DEFAULT_DIMENSION=5;
