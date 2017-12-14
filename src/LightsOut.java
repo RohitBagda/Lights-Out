@@ -1,7 +1,6 @@
 import comp124graphics.CanvasWindow;
 
 import javax.swing.*;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
@@ -51,9 +50,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         boardLength=canvasWidth;
         this.canvasWidth=canvasWidth;
         int buttonWidth = (int)(SCREEN_WIDTH/12.8);
-        int buttonHeight = SCREEN_WIDTH/96;
+        int buttonHeight = SCREEN_WIDTH/72;
         int buttonGap = SCREEN_WIDTH/384;
-        int topGap = SCREEN_WIDTH/192;
+        int topGap = SCREEN_WIDTH/256;
         pauseTimerRunning = false;
         showingSolution=false;
         solutionIndicator=0;
@@ -102,9 +101,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         numberFormatter.setCommitsOnValidEdit(true);
 
         textField = new JFormattedTextField(numberFormatter);
-//        textField.setDocument();
+        textField.setDocument(new LengthRestrictedDocument(2));
         textField.setSize(buttonWidth,buttonHeight);
-        textField.setLocation(canvasWidth/2+buttonGap/2, 2*buttonHeight+2*buttonGap);
+        textField.setLocation(canvasWidth/2+buttonGap/2, (int)(1.5*buttonHeight));
         textField.setEditable(true);
         textField.setFont(new Font(null, Font.BOLD, FONT_SIZE));
         add(textField);
@@ -134,7 +133,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         addResetButton(buttonWidth, buttonHeight, leftGap, topGap);
         addShowSolutionButton(buttonWidth, buttonHeight, leftGap+buttonWidth+buttonGap, topGap);
         addPlayButton(buttonWidth, buttonHeight, leftGap+buttonWidth*2+buttonGap + buttonGap, topGap);
-        addUserChoiceButton(buttonWidth, buttonHeight, canvasWidth/2 - buttonWidth-buttonGap/2, 2*buttonHeight+2*buttonGap);
+        addUserChoiceButton(buttonWidth, buttonHeight, canvasWidth/2 - buttonWidth-buttonGap/2, (int)(1.5*buttonHeight));
     }
 
     private void addUserChoiceButton(int width, int height, int x, int y){
@@ -310,7 +309,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                         timer.stop();
                     }
                 }
-
             }
         });
     }
@@ -462,7 +460,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         double screenWidth=screenSize.getWidth();
         int canvasWidth=(int)(screenWidth/2.4);
         int ceilingGap=(int)(screenWidth/(19.2*1.2));
-        LightsOut lightsOut = new LightsOut(1600,ceilingGap);
+        LightsOut lightsOut = new LightsOut(canvasWidth,ceilingGap);
     }
 
 }
