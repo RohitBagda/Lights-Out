@@ -14,7 +14,7 @@ public class Board extends GraphicsGroup{
     private int n;
     private Bulb board[][];
 
-    protected final double BULB_GAP;
+    private final double BULB_GAP;
 
 
     public Board(double x, double y, double boardLength, int dimension){
@@ -83,20 +83,16 @@ public class Board extends GraphicsGroup{
                 System.out.println("Bottom neighbour status: " +board[i+1][j].onOff());
             }
 
-//        } else if(obj instanceof GraphicsText){
-//            Bulb thisBulb = (Bulb)getElementAt(((GraphicsText) obj).getX(), ((GraphicsText) obj).getY());
-//            thisBulb.toggle();
-//            System.out.println("Bulb toggled: " + thisBulb.getId());
-
         } else {
             System.out.println("No bulb toggled");
         }
-
-
     }
 
     public Bulb getBulbAt(int i, int j){
         return board[i][j];
     }
 
+    public double getBULB_GAP() {
+        return BULB_GAP;
+    }
 }
