@@ -1,6 +1,8 @@
 import comp124graphics.CanvasWindow;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
@@ -34,7 +36,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private final int FONT_SIZE=SCREEN_WIDTH/128;
     private int buttonWidth;
     private int buttonHeight;
+    private int buttonGap;
+    private int leftGap;
+    private int topGap;
     private final int CHARACTER_LIMIT = 2;
+    private int currentSliderValue;
 
     private boolean pauseTimerRunning;
     private boolean showingSolution;
@@ -44,33 +50,36 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private JButton userChoiceButton;
     private JButton pause;
     private JButton play;
+    private JSlider animationSpeedSlider;
 
     public LightsOut(int canvasWidth, int ceilingGap){
         super("Lights Out!", canvasWidth, canvasWidth+ceilingGap);
         Color backGroundColor = new Color(29,111,140);
         super.setBackground(backGroundColor);
 
+        currentSliderValue = 50;
+
         this.n=DEFAULT_DIMENSION;
         boardLength=canvasWidth;
         this.canvasWidth=canvasWidth;
         buttonWidth = (int)(SCREEN_WIDTH/12.8);
         buttonHeight = SCREEN_WIDTH/72;
-        int buttonGap = SCREEN_WIDTH/384;
-        int topGap = SCREEN_WIDTH/256;
+        buttonGap = SCREEN_WIDTH/384;
+        topGap = SCREEN_WIDTH/256;
         pauseTimerRunning = false;
         showingSolution=false;
         solutionIndicator=0;
-
+        leftGap=(canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap;
         this.CEILING_GAP=ceilingGap;
         addAllButtons(buttonWidth, buttonHeight, topGap, (canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap, buttonGap);
-        addTextField(buttonWidth, buttonHeight,(canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap, buttonGap );
+        addTextField(buttonWidth, buttonHeight,leftGap, buttonGap );
+        addAnimationSpeedSlider();
         addMouseListener(this);
         addKeyListener(this);
         buildGame(n, true);
     }
 
     private void buildGame(int dimensionEntered, boolean nChanged){
-
         int currentN=n;
         this.n=dimensionEntered;
         int[][] A = createMatrix();
@@ -81,11 +90,15 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
             this.n=currentN;
         }
         drawBoard();
+        pause.setEnabled(false);
+        play.setEnabled(false);
         solutionVectCounter=0;
         mainBulbVectCounter=0;
         calculatePauseTime();
         setupJavaTimer();
     }
+
+
 
     private void drawBoard(){
         gameBoard = new Board(EDGE_GAP, CEILING_GAP, boardLength, n);
@@ -214,7 +227,24 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         add(showSolutionButton);
     }
 
+    private void addAnimationSpeedSlider(){
 
+        animationSpeedSlider = new JSlider(JSlider.HORIZONTAL, 1, 100, 50);
+        animationSpeedSlider.setSize(3*buttonWidth+2*buttonGap, buttonHeight);
+        animationSpeedSlider.setVisible(true);
+        animationSpeedSlider.setLocation(leftGap, 3*buttonHeight+2*buttonGap);
+        animationSpeedSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider slider = (JSlider)e.getSource();
+                currentSliderValue = slider.getValue();
+                System.out.println(currentSliderValue);
+                calculatePauseTime();
+                timer.setDelay(pauseTime);
+            }
+        });
+        add(animationSpeedSlider);
+    }
 
     private int[][] createMatrix() {
         int[][] matrix = new int[n*n][n*n];
@@ -257,16 +287,18 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
     private void calculatePauseTime(){
 
-        pauseTime=0;
-        if(n<10){
-            pauseTime = 200;
-        } else if(n<20){
-            pauseTime = 100;
-        } else if(n<50){
-            pauseTime = 50;
-        } else if(n<100){
-            pauseTime = 25;
-        }
+        int c = 0;
+
+//        if(n<10){
+//            c = 0;
+//        } else if(n<20){
+//            c = 25;
+//        } else if(n<50){
+//            c = 50;
+//        } else {
+//            c = 75;
+//        }
+        pauseTime = 400 - 4*(currentSliderValue) + c;
     }
 
 
@@ -444,10 +476,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
         if (cmd.equals("Pause")){
             if (pauseTimerRunning){
-//                pause.setActionCommand("Play");
-//                pause.setText(pause.getActionCommand());
-//                remove(pause);
-//                add(play);
                 timer.stop();
                 pause.setEnabled(false);
                 play.setEnabled(true);
@@ -457,10 +485,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
         if(cmd.equals("Play")){
             if(!pauseTimerRunning) {
-//                pause.setActionCommand("Pause");
-//                pause.setText(pause.getActionCommand());
-//                remove(play);
-//                add(pause);
                 play.setEnabled(false);
                 pause.setEnabled(true);
                 timer.start();

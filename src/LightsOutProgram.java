@@ -8,7 +8,7 @@ public class LightsOutProgram {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double screenWidth=screenSize.getWidth();
         int canvasWidth=(int)(screenWidth/2.4);
-        int ceilingGap=(int)(screenWidth/(19.2*1.2));
+        int ceilingGap=(int)(screenWidth/(19.2*0.8));
         LightsOut lightsOut = new LightsOut(canvasWidth,ceilingGap);
     }
 }
