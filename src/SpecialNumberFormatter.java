@@ -7,16 +7,19 @@ import java.text.ParseException;
  */
 public class SpecialNumberFormatter extends NumberFormatter {
 
-    public SpecialNumberFormatter(NumberFormat format){
+    private int characterLimit;
+
+    public SpecialNumberFormatter(NumberFormat format, int limit){
         super(format);
+        this.characterLimit = 2;
     }
 
     @Override
     public Object stringToValue(String str) throws ParseException{
         if (str.equals("")){
             return null;
-        } if (str.length()>2){
-            return Integer.parseInt(str.substring(0,2));
+        } if (str.length()> characterLimit){
+            return Integer.parseInt(str.substring(0, characterLimit));
         }
 
         return Integer.parseInt(str);

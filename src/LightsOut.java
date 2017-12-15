@@ -34,6 +34,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private final int FONT_SIZE=SCREEN_WIDTH/128;
     private int buttonWidth;
     private int buttonHeight;
+    private final int CHARACTER_LIMIT = 2;
 
     private boolean pauseTimerRunning;
     private boolean showingSolution;
@@ -96,7 +97,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private void addTextField(int buttonWidth, int buttonHeight, int leftGap, int buttonGap){
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(false);
-        SpecialNumberFormatter numberFormatter = new SpecialNumberFormatter(numberFormat);
+        SpecialNumberFormatter numberFormatter = new SpecialNumberFormatter(numberFormat, CHARACTER_LIMIT);
         numberFormatter.setValueClass(Integer.class);
         numberFormatter.setMinimum(0);
         numberFormatter.setMaximum(DIMENSION_LIMIT);
@@ -105,7 +106,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         numberFormatter.setCommitsOnValidEdit(true);
 
         textField = new JFormattedTextField(numberFormatter);
-        textField.setDocument(new LengthRestrictedDocument(2));
+        textField.setDocument(new LengthRestrictedDocument(CHARACTER_LIMIT));
         textField.setSize(buttonWidth,buttonHeight);
         textField.setLocation(leftGap+buttonWidth+buttonGap, (int)(1.5*buttonHeight));
         textField.setEditable(true);
