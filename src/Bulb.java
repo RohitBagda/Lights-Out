@@ -8,19 +8,17 @@ import java.awt.*;
  */
 public class Bulb extends Rectangle {
 
-    boolean isOn;
-    protected Color onColor, offColor, isSolutionColor;
-    int id;
-    double width, height;
-    double XOnCanvas, YOnCanvas;
+    private boolean isOn;
+    private Color onColor, offColor, isSolutionColor;
+    private int id;
+    private double width, height;
+    private double XOnCanvas, YOnCanvas;
 
     public Bulb(double x, double y, double width, double height, int id){
         super(x,y, width, height);
         this.id = id;
 
         offColor = Color.DARK_GRAY;
-//        onColor = Color.getHSBColor(45, 9, 100);
-//        onColor = Color.orange;
         onColor = Color.getHSBColor(174, 62, 68);
 
         isSolutionColor = new Color(29,111,169);
