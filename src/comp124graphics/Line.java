@@ -173,10 +173,7 @@ public class Line extends GraphicsObject {
         Point.Double transformedPoint = new Point2D.Double(x, y);
         transform.transform(point, transformedPoint);
         java.awt.Rectangle test = new java.awt.Rectangle((int)Math.round(transformedPoint.getX()), (int)Math.round(transformedPoint.getY()), 1*devScale,1*devScale);
-        if (gc.hit(test, shape, false || gc.hit(test, shape, true))){
-            return true;
-        }
-        return false;
+        return gc.hit(test, shape, false || gc.hit(test, shape, true));
     }
 
     /**

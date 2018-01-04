@@ -6,19 +6,20 @@ import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
+import java.util.Hashtable;
 
 /**
  * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 11/25/2017.
- * The LightsOut class uses the comp124 graphics Library to create a CanvasWindow and build the Lights Out Puzzle
+ * The LightsOut class uses the comp124 graphics Library to create a CanvasWindow and builds the Lights Out Puzzle
  * using other helper classes.
  */
-public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener, ActionListener, KeyListener{
+public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener, ActionListener, KeyListener,
+        MouseWheelListener{
 
 
     private Board gameBoard;
     private Timer timer;
     private JFormattedTextField textField;
-    private Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     private JButton userChoiceButton;
     private JButton pause;
     private JButton play;
@@ -32,6 +33,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private int mainBulbVectorCounter;
     private int solutionIndicator;
     private int canvasWidth;
+    private int canvasHeight;
     private int buttonWidth;
     private int buttonHeight;
     private int buttonGap;
@@ -41,52 +43,78 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     private boolean pauseTimerRunning;
     private boolean showingSolution;
 
+    private final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     private final int SCREEN_WIDTH=(int)(SCREEN_SIZE.getWidth());
     private final double EDGE_GAP = SCREEN_WIDTH/(SCREEN_WIDTH/10);
     private final int DIMENSION_LIMIT=100;
     private final int DEFAULT_DIMENSION=5;
     private final int FONT_SIZE=SCREEN_WIDTH/128;
-    private final int CHARACTER_LIMIT = 2;
+    private final String FONT_NAME="Tahoma";
+    private final Font BUTTON_FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
 
-
-    public LightsOut(int canvasWidth, int ceilingGap){
-        super("Lights Out!", canvasWidth, canvasWidth+ceilingGap);
-        Color backGroundColor = new Color(29,111,140);
-        super.setBackground(backGroundColor);
+    /**
+     * Creates a Canvas for the Lights Out Puzzle and call methods to perform required operations.
+     * @param canvasWidth
+     * @param canvasHeight Gap between top edge of canvas and Bulbs.
+     */
+    public LightsOut(int canvasWidth, int canvasHeight){
+        super("Lights Out!", canvasWidth, canvasHeight);
 
         this.n=DEFAULT_DIMENSION;
         this.canvasWidth=canvasWidth;
-        this.ceilingGap =ceilingGap;
+        this.canvasHeight =canvasHeight;
 
+        setCanvasBackGround();
         calculateNecessaryComponents();
         addAllComponents();
         buildGame(n, true);
     }
 
+    /**
+     * Set Background Color of the Canvas.
+     */
+    private void setCanvasBackGround(){
+        Color backGroundColor = new Color(29,111,140);
+        super.setBackground(backGroundColor);
+    }
+
+    /**
+     * Initialize instance variables with their corresponding values.
+     */
     private void calculateNecessaryComponents(){
-        boardLength=canvasWidth;
+        ceilingGap=canvasHeight-canvasWidth;
+        boardLength = canvasWidth;
         buttonWidth = (int)(SCREEN_WIDTH/12.8);
         buttonHeight = SCREEN_WIDTH/72;
         buttonGap = SCREEN_WIDTH/384;
         topGap = SCREEN_WIDTH/256;
         pauseTimerRunning = false;
-        showingSolution=false;
-        solutionIndicator=0;
-        leftGap=(canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap;
+        showingSolution = false;
+        solutionIndicator = 0;
+        leftGap = (canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap;
     }
 
+    /**
+     * Call Methods to add GUI components and Listeners.
+     */
     private void addAllComponents(){
-        addAllButtons();
         addTextField();
+        addAllButtons();
         addAnimationSpeedSlider();
         addMouseListener(this);
         addKeyListener(this);
+        addMouseWheelListener(this);
     }
 
+    /**
+     * Create a Special Number Formatter for Dimension Text Field Input.
+     * @return a New Number Formatter which only excepts Integer inputs for Dimension.
+     */
     private NumberFormatter createNumberFormatForTextField(){
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(false);
-        SpecialNumberFormatter numberFormatter = new SpecialNumberFormatter(numberFormat, CHARACTER_LIMIT);
+        final int characterLimit = 2;
+        SpecialNumberFormatter numberFormatter = new SpecialNumberFormatter(numberFormat, characterLimit);
         numberFormatter.setValueClass(Integer.class);
         numberFormatter.setMinimum(2);
         numberFormatter.setMaximum(DIMENSION_LIMIT);
@@ -95,21 +123,27 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         return numberFormatter;
     }
 
+    /**
+     * Set text field characteristics.
+     * @param textField
+     */
     private void formatTextField(JFormattedTextField textField){
-        textField.setDocument(new LengthRestrictedDocument(CHARACTER_LIMIT));
+        textField.setText(Integer.toString(DEFAULT_DIMENSION));
+        textField.requestFocusInWindow();
         textField.setSize(buttonWidth,buttonHeight);
         textField.setLocation(leftGap+buttonWidth+buttonGap, (int)(1.5*buttonHeight));
         textField.setEditable(true);
-        textField.setFont(new Font(null, Font.BOLD, FONT_SIZE));
-        textField.grabFocus();
+        textField.setFont(BUTTON_FONT);
         textField.setHorizontalAlignment(JFormattedTextField.CENTER);
-        textField.setText(Integer.toString(DEFAULT_DIMENSION));
         textField.setCaretPosition(textField.getText().length());
         textField.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
     }
+
+    /**
+     * Add text field and its listeners to canvas.
+     */
     private void addTextField(){
         NumberFormatter numberFormatter = createNumberFormatForTextField();
-
         textField = new JFormattedTextField(numberFormatter);
         formatTextField(textField);
         add(textField);
@@ -121,16 +155,18 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
             }
         });
         textField.addKeyListener(new KeyAdapter() {
-                    public void keyReleased( KeyEvent e ) {
-
-                        if( e.getKeyCode() == KeyEvent.VK_ENTER ) {
-                            userChoiceButton.doClick();
-                        }
+                public void keyReleased( KeyEvent e ) {
+                    if( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+                        userChoiceButton.doClick();
                     }
                 }
+            }
         );
     }
 
+    /**
+     * Call methods to create and add all Buttons to the Canvas.
+     */
     private void addAllButtons(){
         int firstRowButtonHeight=topGap;
         int secondRowButtonHeight=(int)(1.5*buttonHeight);
@@ -142,81 +178,135 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         addPlayButton(leftGap+(buttonWidth)*2+buttonWidth/2 + 2*buttonGap + buttonGap/2, secondRowButtonHeight);
     }
 
+    /**
+     * Create, format and, add "Enter Size" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addUserChoiceButton(int x, int y){
         userChoiceButton = new JButton("Enter Size");
         userChoiceButton.setLocation(x, y);
         userChoiceButton.setSize(buttonWidth, buttonHeight);
         userChoiceButton.setText("Enter Size");
-        userChoiceButton.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        userChoiceButton.setFont(BUTTON_FONT);
         userChoiceButton.addActionListener(this);
         userChoiceButton.addKeyListener(this);
         userChoiceButton.setPreferredSize(new Dimension(buttonWidth,buttonHeight));
         add(userChoiceButton);
     }
 
+    /**
+     * Create, format and, add "Reset" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addResetButton(int x, int y){
         JButton reset = new JButton("Reset");
         reset.setLocation(x, y);
         reset.setSize(buttonWidth,buttonHeight);
         reset.setText("Reset");
-        reset.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        reset.setFont(BUTTON_FONT);
         reset.addActionListener(this);
         reset.setPreferredSize(new Dimension(buttonWidth,buttonHeight));
         add(reset);
     }
 
+    /**
+     * Create, format and, add "Visualize" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addVisualizeButton(int x, int y){
         JButton visualize = new JButton("Visualize");
         visualize.setLocation(x,y);
         visualize.setSize(buttonWidth,buttonHeight);
         visualize.setText("Visualize");
-        visualize.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        visualize.setFont(BUTTON_FONT);
         visualize.addActionListener(this);
         visualize.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
         add(visualize);
     }
 
+    /**
+     * Create, format and, add "Pause" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addPauseButton(int x, int y){
         pause = new JButton("Pause");
         pause.setLocation(x,y);
         pause.setSize(buttonWidth/2,buttonHeight);
         pause.setText("Pause");
-        pause.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        pause.setFont(BUTTON_FONT);
         pause.addActionListener(this);
         pause.setEnabled(false);
         pause.setPreferredSize(new Dimension(buttonWidth/2, buttonHeight));
         add(pause);
     }
 
+    /**
+     * Create, format and, add "Play" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addPlayButton(int x, int y){
         play = new JButton("Play");
         play.setLocation(x,y);
         play.setSize(buttonWidth/2-buttonGap/2,buttonHeight);
         play.setText("Play");
-        play.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        play.setFont(BUTTON_FONT);
         play.addActionListener(this);
         play.setEnabled(false);
         play.setPreferredSize(new Dimension(buttonWidth/2-buttonGap/2, buttonHeight));
         add(play);
     }
 
-
+    /**
+     * Create, format and, add "Show Solution" button.
+     * @param x X Coordinate
+     * @param y Y Coordinate
+     */
     private void addShowSolutionButton(int x, int y){
         JButton showSolutionButton = new JButton("Show Solution");
         showSolutionButton.setLocation(x,y);
         showSolutionButton.setSize(buttonWidth-buttonGap/2,buttonHeight);
         showSolutionButton.setText("Show Solution");
         showSolutionButton.addActionListener(this);
-        showSolutionButton.setFont(new Font(null, Font.BOLD, FONT_SIZE));
+        showSolutionButton.setFont(BUTTON_FONT);
         showSolutionButton.setPreferredSize(new Dimension(buttonWidth-buttonGap/2,buttonHeight));
         add(showSolutionButton);
     }
 
+    /**
+     * Create, format and, add "Visualization Speed" Slider.
+     */
     private void addAnimationSpeedSlider(){
-        JSlider animationSpeedSlider = new JSlider(JSlider.HORIZONTAL, 1, 100, 50);
+
+        JLabel animationSpeedLabel = new JLabel("Visualization Speed");
+        animationSpeedLabel.setFont(BUTTON_FONT);
+        JSlider animationSpeedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
+        table.put (50, animationSpeedLabel);
+        animationSpeedSlider.setLabelTable(table);
+
+        animationSpeedSlider.setPaintTrack(true);
+        animationSpeedSlider.setPaintLabels(true);
+        animationSpeedSlider.setPaintTicks(false);
+        animationSpeedSlider.setBackground(super.getBackground());
         animationSpeedSlider.setSize(3*buttonWidth+2*buttonGap, buttonHeight);
         animationSpeedSlider.setVisible(true);
-        animationSpeedSlider.setLocation(leftGap, 3*buttonHeight+2*buttonGap);
+        animationSpeedSlider.setLocation(leftGap, 2*buttonHeight+ buttonHeight/2 +3*buttonGap);
+        animationSpeedSlider.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int notches = e.getWheelRotation();
+                if (notches<0) {
+                    animationSpeedSlider.setValue(animationSpeedSlider.getValue() + 1);
+                } else if(notches>0){
+                    animationSpeedSlider.setValue(animationSpeedSlider.getValue() - 1);
+                }
+            }
+        });
         animationSpeedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -229,12 +319,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         add(animationSpeedSlider);
     }
 
+    /**
+     * Builds a new game each time a new dimension entered by the player.
+     * @param dimensionEntered Size entered by user
+     * @param nChanged Denotes whether the user enters a new dimension or not.
+     */
     private void buildGame(int dimensionEntered, boolean nChanged){
         int currentN=n;
         this.n=dimensionEntered;
         int[][] A = createMatrix();
         if(nChanged){
-            GaussianElimination elimination = new GaussianElimination(A);
+            GaussianElimination elimination = new GaussianElimination();
             solution = elimination.findSolution(A);
         } else if(n>=DIMENSION_LIMIT|| n<2){
             this.n=currentN;
@@ -248,6 +343,10 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         setupJavaTimer();
     }
 
+    /**
+     * Sets up initial matrix for Gaussian Elimination.
+     * @return
+     */
     private int[][] createMatrix() {
         int[][] matrix = new int[n*n][n*n];
 
@@ -286,6 +385,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         return matrix;
     }
 
+    /**
+     * Draws a new Board on the canvas of size n.
+     */
     private void drawBoard(){
         gameBoard = new Board(EDGE_GAP, ceilingGap, boardLength, n);
         add(gameBoard);
@@ -293,10 +395,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         pause.setEnabled(false);
     }
 
+    /**
+     * Calculate the Visualization pause time for the Java Timer.
+     */
     private void calculatePauseTime(){
         pauseTime = 400 - 4*(currentSliderValue);
     }
 
+    /**
+     * Indicates the solution to Lights Out on the canvas
+     * @param vector Solution to Lights out
+     */
     private void showSolution(int[] vector){
         for (int i=0; i<vector.length;i++){
             int row, col;
@@ -310,6 +419,10 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Stops Showing the solution on the canvas.
+     * @param vector Solution to Lights out
+     */
     private void undoShowSolution(int[] vector){
         for (int i=0; i<vector.length;i++){
             if(vector[i]!=0){
@@ -320,6 +433,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * A Java timer to help visualize the solution. The timer repeats after a particular pause time and performs three
+     * operations alternately to show the current bulb being toggled, followed by it's neighbors and then proceed to the
+     * next Bulb in the solution vector. When the solution is completely visualized, it resets related components it had
+     * used to perform the visualization.
+     * There are three counters used to carry out this process smoothly.
+     *      1) solutionVectorCounter - It is used to keep track of the index position of the Solution Vector.
+     *      2) mainBulbVectorCounter - It is used to keep track of the Bulbs which need to be highlighted red while
+     *                                 the visualization is being carried out.
+     *      3) solutionIndicator - It is used to denote which of the three operations is to be performed.
+     */
     private void setupJavaTimer() {
         timer = new Timer(pauseTime, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -347,12 +471,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                     pause.setEnabled(false);
                     pause.setText("Pause");
                     timer.stop();
+                    pauseTimerRunning=false;
                 }
             }
         });
     }
 
-    protected void update(int vector[]){
+    /**
+     * Updates status of the bulb toggled and its neighbors.
+     * @param vector
+     */
+    private void update(int vector[]){
         int row;
         int column;
         int i = solutionVectorCounter;
@@ -361,13 +490,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
             if (vector[i] == 1){
                 row = i/n;
                 column = i % n;
-                toggleBulbAndNeighbors(row,column, pauseTime);
+                toggleBulbAndNeighbors(row,column);
             }
         }
-
     }
 
-    private void toggleBulbAndNeighbors(int row, int column, long pauseTime){
+    /**
+     * Toggles Bulb and its neighbors
+     * @param row
+     * @param column
+     */
+    private void toggleBulbAndNeighbors(int row, int column){
 
         gameBoard.getBulbAt(row, column).toggle();
 
@@ -390,9 +523,12 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         if(row!=n-1){
             gameBoard.getBulbAt(row+1, column).toggle();
         }
-        pause(pauseTime);
     }
 
+    /**
+     * Visualizes the Bulb being toggled by highlighting it to red.
+     * @param vector
+     */
     private void visualizeMainBulbColor(int vector[]){
         int row;
         int column;
@@ -414,21 +550,40 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Reset Solution Vector Counter back to 0.
+     */
     private void resetSolutionVectorCounter(){
         solutionVectorCounter =0;
     }
 
+    /**
+     * Reset Main Bulb Vector Counter back to 0.
+     */
     private void resetMainBulbVectorCounter(){
         mainBulbVectorCounter =0;
     }
+
+    /**
+     * Reset Solution Indicator back to 0.
+     */
     private void resetSolutionIndicator(){
         solutionIndicator=0;
     }
 
-    private void checkBoardClicked(double x, double y){
+    /**
+     * Call a method in the Board class to toggle a Bulb and its neighbors on the game board.
+     * @param x
+     * @param y
+     */
+    private void performBulbToggleOperations(double x, double y){
         gameBoard.toggleBulb(x,y);
     }
 
+    /**
+     * Call respective methods based on user's selection of button.
+     * @param e
+     */
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         if (cmd.equals("Reset")) {
@@ -446,6 +601,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Reset the Canvas.
+     */
     private void performReset(){
         remove(gameBoard);
         drawBoard();
@@ -454,6 +612,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         pause.setEnabled(false);
     }
 
+    /**
+     * Visualize Solution
+     */
     private void performVisualize(){
         remove(gameBoard);
         drawBoard();
@@ -466,6 +627,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         pause.setEnabled(true);
     }
 
+    /**
+     * Show Solution
+     */
     private void performShowSolution(){
         if(!showingSolution){
             showSolution(solution);
@@ -476,6 +640,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Accept New Size from User
+     */
     private void performNewSize(){
         timer.stop();
         resetSolutionVectorCounter();
@@ -486,6 +653,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         pause.setEnabled(false);
     }
 
+    /**
+     * Pause the Visualization
+     */
     private void performPause(){
         if (pauseTimerRunning){
             timer.stop();
@@ -495,6 +665,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Resume Visualization
+     */
     private void performPlay(){
         if(!pauseTimerRunning) {
             play.setEnabled(false);
@@ -504,6 +677,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         }
     }
 
+    /**
+     * Rebuild puzzle with a new dimension.
+     */
     private void rebuildWithNewSize(){
         remove(gameBoard);
         int dimensionEntered=Integer.parseInt(textField.getText());
@@ -516,11 +692,18 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         buildGame(dimensionEntered, nChanged);
     }
 
+    /**Mouse & Key Listeners**/
     @Override
     public void mouseClicked(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        checkBoardClicked(x,y);
+        if(!pauseTimerRunning){
+            performBulbToggleOperations(x,y);
+        }
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
     }
 
     @Override
@@ -549,6 +732,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        textField.setRequestFocusEnabled(true);
+        textField.requestFocus();
+        textField.requestFocusInWindow();
     }
 
     @Override
@@ -561,6 +747,5 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
 
     @Override
     public void keyReleased(KeyEvent e) {
-
     }
 }

@@ -1,29 +1,39 @@
 import java.util.ArrayList;
 
 /**
+ * The Gaussian Elimination reduces a Binary Matrix of dimension n, to row echelon form and then finds the solution to
+ * the Lights Out Puzzle.
  * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 12/8/2017.
  */
 
-class GaussianElimination {
+public class GaussianElimination {
 
-    int OriginalMatrix[][];
-
-    public GaussianElimination(int A[][]){
-
-        this.OriginalMatrix = A;
-
+    /**
+     * Constructor
+     */
+    public GaussianElimination(){
     }
 
+    /**
+     * Generate Augmented Column of size l comprising of all 1's representing the state of each Bulb being switched on.
+     * @param l size of Augmented Column
+     * @return a vector of size l comprising of all 1's
+     */
     private double[] makeAugmentedColumn(int l){
         double augmentedColumn[] = new double[l];
 
-        for(int i=0;i<l;i++){
+        for(int i = 0; i < l; i++){
             augmentedColumn[i]=1;
         }
 
         return augmentedColumn;
     }
 
+    /**
+     * Generate Augmented Matrix by combining the original matrix with augmented vector.
+     * @param matrix original matrix
+     * @return augmented matrix
+     */
     private double[][] makeAugmentedMatrix(int matrix[][]) {
 
         int numRows = matrix.length;
@@ -45,6 +55,11 @@ class GaussianElimination {
         return augmentedMatrix;
     }
 
+    /**
+     * Convert Binary Matrix to Row Echelon Form
+     * @param matrix Original Matrix
+     * @return Binary matrix in Row Echelon Form
+     */
     private int[][] convertToRowEchelonForm(int matrix[][]){
 
         double augmentedMatrix[][] = makeAugmentedMatrix(matrix);
@@ -76,14 +91,19 @@ class GaussianElimination {
         }
 
         int rowEchelonMatrix[][] = new int[n][n+1];
-        for (int i=0;i<n;i++){
-            for (int j=0;j<n+1;j++){
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < n+1; j++){
                rowEchelonMatrix[i][j] = (int)augmentedMatrix[i][j];
             }
         }
         return rowEchelonMatrix;
     }
 
+    /**
+     * Carry Out Backward Substitution on Row Echelon Matrix to find solution to the Lights Out Puzzle.
+     * @param matrix Binary Matrix
+     * @return A solution vector indicating the Bulbs that need to be toggled to solve Lights Out.
+     */
     public int[] findSolution(int[][] matrix){
 
         int[][] rowEchelonForm = convertToRowEchelonForm(matrix);
@@ -107,7 +127,6 @@ class GaussianElimination {
             }
         }
 
-
         for (Position pos : results) {
             if (pos.isPivot()) {
                 int col = pos.getColumn();
@@ -115,14 +134,9 @@ class GaussianElimination {
             }
         }
 
-        for (int k = 0; k < l; k++) {
-            if (!listPivotColumns.contains(k)) {
-                solution[k] = 0;
-            }
-        }
-
         for (int i = 0; i < l; i++) {
             if (!listPivotColumns.contains(i)) {
+                solution[i] = 0;
                 for (int j = 0; j < i; j++) {
                     rowEchelonForm[j][i] = 0;
                 }

@@ -125,10 +125,7 @@ public class Image extends GraphicsObject{
      * @return true if this shape is the topmost object at point (x, y)
      */
     public boolean testHit(double x, double y, Graphics2D gc){
-        if (x >= this.x && x <= this.x+img.getWidth() && y >= this.y && y <= this.y+img.getHeight()){
-            return true;
-        }
-        return false;
+        return x >= this.x && x <= this.x + img.getWidth() && y >= this.y && y <= this.y + img.getHeight();
     }
 
     /**

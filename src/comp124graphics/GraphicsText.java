@@ -165,10 +165,7 @@ public class GraphicsText extends GraphicsObject {
         Point.Double transformedPoint = new Point2D.Double(x, y);
         transform.transform(point, transformedPoint);
         java.awt.Rectangle test = new java.awt.Rectangle((int)Math.round(transformedPoint.getX()), (int)Math.round(transformedPoint.getY()), 1*devScale,1*devScale);
-        if (gc.hit(test, textShape, true) || gc.hit(test, textShape, false)){
-            return true;
-        }
-        return false;
+        return gc.hit(test, textShape, true) || gc.hit(test, textShape, false);
     }
 
     /**
@@ -176,6 +173,6 @@ public class GraphicsText extends GraphicsObject {
      * @return
      */
     public java.awt.Rectangle getBounds(){
-        return new java.awt.Rectangle((int)Math.round(x), (int)Math.round(y), (int)Math.round(getWidth()), (int)Math.round(getHeight()));
+        return new java.awt.Rectangle(Math.round(x), Math.round(y), (int)Math.round(getWidth()), (int)Math.round(getHeight()));
     }
 }
