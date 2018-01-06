@@ -13,7 +13,7 @@ import java.util.Hashtable;
  * The LightsOut class uses the comp124 graphics Library to create a CanvasWindow and builds the Lights Out Puzzle
  * using other helper classes.
  */
-public class LightsOut extends CanvasWindow implements MouseListener, ActionListener, KeyListener {
+public class LightsOut extends CanvasWindow implements MouseListener, ActionListener, MouseWheelListener, KeyListener {
 
 
     private Board gameBoard;
@@ -739,5 +739,9 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
     }
 }
