@@ -13,8 +13,7 @@ import java.util.Hashtable;
  * The LightsOut class uses the comp124 graphics Library to create a CanvasWindow and builds the Lights Out Puzzle
  * using other helper classes.
  */
-public class LightsOut extends CanvasWindow implements MouseListener, MouseMotionListener, ActionListener, KeyListener,
-        MouseWheelListener{
+public class LightsOut extends CanvasWindow implements MouseListener, ActionListener, KeyListener {
 
 
     private Board gameBoard;
@@ -102,8 +101,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
         addAllButtons();
         addAnimationSpeedSlider();
         addMouseListener(this);
-        addKeyListener(this);
-        addMouseWheelListener(this);
     }
 
     /**
@@ -314,6 +311,15 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
                 currentSliderValue = slider.getValue();
                 calculatePauseTime();
                 timer.setDelay(pauseTime);
+            }
+        });
+        animationSpeedLabel.addKeyListener(new KeyAdapter() {
+            public void keyReleased( KeyEvent e ) {
+                if( e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    animationSpeedSlider.setValue(animationSpeedSlider.getValue() - 1);
+                } else if( e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_UP){
+                    animationSpeedSlider.setValue(animationSpeedSlider.getValue() + 1);
+                }
             }
         });
         add(animationSpeedSlider);
@@ -703,16 +709,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
     }
 
     @Override
@@ -726,26 +727,17 @@ public class LightsOut extends CanvasWindow implements MouseListener, MouseMotio
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        textField.setRequestFocusEnabled(true);
-        textField.requestFocus();
-        textField.requestFocusInWindow();
-    }
-
-    @Override
     public void keyTyped(KeyEvent e) {
+
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+
     }
 }

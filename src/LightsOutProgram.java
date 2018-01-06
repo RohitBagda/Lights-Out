@@ -11,8 +11,8 @@ import java.awt.Toolkit;
  * This project uses comp124graphics Library created by Professor Bret Jackson at Macalester College to help build the
  * game components to visualize the puzzle.
  */
-
 public class LightsOutProgram {
+
     /**
      * The method creates an object of LightsOut to run the puzzle.
      * @param args
