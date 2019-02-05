@@ -49,8 +49,4 @@ public class Bulb extends Rectangle {
     public int getId() {
         return id;
     }
-
-    protected boolean getIsOn(){
-        return isOn;
-    }
 }
