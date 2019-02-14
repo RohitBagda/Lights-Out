@@ -1,7 +1,5 @@
-import org.junit.Before;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class TestBulb {
     Bulb bulb;
