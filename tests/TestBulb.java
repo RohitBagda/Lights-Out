@@ -13,4 +13,13 @@ public class TestBulb {
         assertNotEquals(untoggled, toggled);
     }
 
+    @Test
+    public void testGetId(){
+        Bulb bulb1 = new Bulb(0, 0,10,10,0); //Two bulbs Can currently have the same id.
+        assertEquals(bulb1.getId(),0);
+        bulb1 = new Bulb(0, 0,10,10,1);
+        assertEquals(bulb1.getId(),1);
+
+    }
+
 }
