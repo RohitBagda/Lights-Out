@@ -19,11 +19,8 @@ public class TestLightsOut {
                 {1, 0, 1, 1},
                 {0, 1, 1, 1}
         };
-
         int[][] actualResult = lightsout.createMatrix();
-
         assertArrayEquals(expectedResult, actualResult);
-
     }
 
     @Test
