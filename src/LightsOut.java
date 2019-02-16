@@ -16,14 +16,14 @@ import java.util.Hashtable;
 public class LightsOut extends CanvasWindow implements MouseListener, ActionListener, MouseWheelListener, KeyListener {
 
 
-    private Board gameBoard;
+    protected Board gameBoard;
     private Timer timer;
     private JFormattedTextField textField;
     private JButton userChoiceButton;
     private JButton pause;
     private JButton play;
 
-    private int n;
+    protected int n;
     private double boardLength;
     private double ceilingGap;
     private int solution[];
@@ -330,7 +330,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      * @param dimensionEntered Size entered by user
      * @param nChanged Denotes whether the user enters a new dimension or not.
      */
-    private void buildGame(int dimensionEntered, boolean nChanged){
+    protected void buildGame(int dimensionEntered, boolean nChanged){
         int currentN=n;
         this.n=dimensionEntered;
         int[][] A = createMatrix();
@@ -353,7 +353,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      * Sets up initial matrix for Gaussian Elimination.
      * @return
      */
-    private int[][] createMatrix() {
+    protected int[][] createMatrix() {
         int[][] matrix = new int[n*n][n*n];
 
         for (int i=0;i<n*n;i++) {
@@ -506,7 +506,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      * @param row
      * @param column
      */
-    private void toggleBulbAndNeighbors(int row, int column){
+    protected void toggleBulbAndNeighbors(int row, int column){
 
         gameBoard.getBulbAt(row, column).toggle();
 
