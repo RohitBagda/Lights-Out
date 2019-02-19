@@ -19,7 +19,6 @@ public class TestBulb {
         assertEquals(bulb1.getId(),0);
         bulb1 = new Bulb(0, 0,10,10,1);
         assertEquals(bulb1.getId(),1);
-
     }
 
 }
