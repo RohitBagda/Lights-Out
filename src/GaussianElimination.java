@@ -19,7 +19,7 @@ public class GaussianElimination {
      * @param l size of Augmented Column
      * @return a vector of size l comprising of all 1's
      */
-    private double[] makeAugmentedColumn(int l){
+    protected double[] makeAugmentedColumn(int l){
         double augmentedColumn[] = new double[l];
 
         for(int i = 0; i < l; i++){
