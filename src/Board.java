@@ -64,6 +64,7 @@ public class Board extends GraphicsGroup{
      * @param bulb - the bulb that was clicked, and whose neighbors should be toggled
      */
     public void toggleBulb(Bulb bulb){
+        bulb.toggleWasClicked();
         bulb.toggle();
         int i = bulb.getId() / n;
         int j = bulb.getId() % n;
@@ -87,6 +88,22 @@ public class Board extends GraphicsGroup{
         if(i!=(n-1)){
             board[i+1][j].toggle();
         }
+    }
+
+    /**
+     * Returns a (0,1)-vector of the bulbs that must be clicked to reset the board
+     * to the all on state.
+     */
+    public int[] getClickedBulbs() {
+        int clicked[] = new int[n*n];
+
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<n; j++) {
+                clicked[n*i+j] = getBulbAt(i,j).getWasClicked() ? 1 : 0;
+            }
+        }
+
+        return clicked;
     }
 
     /**Getters**/

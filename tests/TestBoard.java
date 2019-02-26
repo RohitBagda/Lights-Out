@@ -72,5 +72,47 @@ public class TestBoard {
     public void testUndoAllMoves() {
         board = new Board(1, 2, 3, 4);
 
+        Bulb bulb = board.getBulbAt(0, 0);
+        board.toggleBulb(bulb);
+
+        bulb = board.getBulbAt(3, 2);
+        board.toggleBulb(bulb);
+
+        bulb = board.getBulbAt(1,3);
+        board.toggleBulb(bulb);
+
+        bulb = board.getBulbAt(3, 2);
+        board.toggleBulb(bulb);
+
+        int expectedUndoVector[] = {
+            1, 0, 0, 0,
+            0, 0, 0, 1,
+            0, 0, 0, 0,
+            0, 0, 0, 0
+        };
+
+        // check that the vector stores the expected value
+        int clickedBulbs[] = board.getClickedBulbs();
+        assertArrayEquals(expectedUndoVector, clickedBulbs);
+
+        // now use these moves to reset the board
+        for(int i=0; i<4; i++) {
+            for(int j=0; j<4; j++) {
+                if(clickedBulbs[i*4+j] == 1) {
+                    bulb = board.getBulbAt(i,j);
+                    board.toggleBulb(bulb);
+                }
+            }
+        }
+
+        // and now check that the board is actually reset
+        for(int i=0; i<4; i++) {
+            for(int j=0; j<4; j++) {
+                if(clickedBulbs[i*4+j] == 1) {
+                    bulb = board.getBulbAt(i,j);
+                    assertTrue(bulb.getIsOn());
+                }
+            }
+        }
     }
 }

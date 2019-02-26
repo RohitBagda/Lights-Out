@@ -5,6 +5,15 @@ public class TestBulb {
     Bulb bulb;
 
     @Test
+    public void testConstructor() {
+        bulb = new Bulb(0, 0, 10, 10, 3);
+
+        assertEquals(3, bulb.getId());
+        assertTrue(bulb.getIsOn());
+        assertFalse(bulb.getWasClicked());
+    }
+
+    @Test
     public void testToggle(){
         bulb = new Bulb(0,0,10,10,0);
         boolean untoggled = bulb.getIsOn();
@@ -20,6 +29,21 @@ public class TestBulb {
         bulb1 = new Bulb(0, 0,10,10,1);
         assertEquals(bulb1.getId(),1);
 
+    }
+
+    @Test
+    public void testToggleWasClicked() {
+        bulb = new Bulb(0,0, 10, 10, 0);
+        boolean unclicked = bulb.getWasClicked();
+
+        bulb.toggleWasClicked();
+        boolean clicked = bulb.getWasClicked();
+
+        bulb.toggleWasClicked();
+        boolean reclicked = bulb.getWasClicked();
+
+        assertNotEquals(unclicked, clicked);
+        assertNotEquals(clicked, reclicked);
     }
 
 }

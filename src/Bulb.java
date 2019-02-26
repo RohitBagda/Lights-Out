@@ -9,6 +9,7 @@ import java.awt.*;
 public class Bulb extends Rectangle {
 
     private boolean isOn;
+    private boolean wasClicked;
     private int id;
 
     private final Color onColor = Color.getHSBColor(174, 62, 68);
@@ -53,4 +54,9 @@ public class Bulb extends Rectangle {
     protected boolean getIsOn(){
         return isOn;
     }
+
+    protected boolean getWasClicked() { return wasClicked; }
+
+    /**Setters**/
+    protected void toggleWasClicked() { wasClicked = !wasClicked; }
 }
