@@ -79,4 +79,33 @@ public class TestLightsOut {
         assertFalse(lightsout.gameBoard.getBulbAt(3, 4).getIsOn());
         assertFalse(lightsout.gameBoard.getBulbAt(4, 3).getIsOn());
     }
+
+    @Test
+    public void testSolvePartialBoard() {
+        LightsOut lightsout = new LightsOut(900, 900);
+        lightsout.buildGame(4, true); // nChanged must be true to override default n=5
+
+        Bulb bulb = lightsout.gameBoard.getBulbAt(2, 3);
+        lightsout.gameBoard.toggleBulb(bulb);
+
+        bulb = lightsout.gameBoard.getBulbAt(0, 3);
+        lightsout.gameBoard.toggleBulb(bulb);
+
+        int newSolution[] = lightsout.solvePartialBoard();
+
+        for(int i=0; i<4; i++) {
+            for(int j=0; j<4; j++) {
+                if(newSolution[4*i+j] == 1) {
+                    bulb = lightsout.gameBoard.getBulbAt(i, j);
+                    lightsout.gameBoard.toggleBulb(bulb);
+                }
+            }
+        }
+
+        for(int i=0; i<4; i++) {
+            for(int j=0; j<4; j++) {
+                assertFalse(lightsout.gameBoard.getBulbAt(i, j).getIsOn());
+            }
+        }
+    }
 }

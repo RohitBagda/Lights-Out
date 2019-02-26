@@ -743,4 +743,19 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
     }
+
+    /**
+     * Combines the pre-generated solution with user moves to produce a solution
+     * to a partially solved board.
+     * @return a solution vector to a partially solved board
+     */
+    public int[] solvePartialBoard() {
+        int[] newSolution = gameBoard.getClickedBulbs();
+
+        for(int i=0; i<n*n; i++) {
+            newSolution[i] ^= solution[i];
+        }
+
+        return newSolution;
+    }
 }
