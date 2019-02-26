@@ -61,36 +61,31 @@ public class Board extends GraphicsGroup{
 
     /**
      * Update the status of a Bulb and its neighbors.
-     * @param x
-     * @param y
+     * @param bulb - the bulb that was clicked, and whose neighbors should be toggled
      */
-    public void toggleBulb(double x, double y){
-        GraphicsObject obj = getElementAt(x,y);
-        if(obj instanceof Bulb ){
-            Bulb thisBulb = (Bulb)obj;
-            thisBulb.toggle();
-            int i = thisBulb.getId() / n;
-            int j = thisBulb.getId() % n;
+    public void toggleBulb(Bulb bulb){
+        bulb.toggle();
+        int i = bulb.getId() / n;
+        int j = bulb.getId() % n;
 
-            //toggle left neighbor
-            if (j != 0){
-                board[i][j-1].toggle();
-            }
+        //toggle left neighbor
+        if (j != 0){
+            board[i][j-1].toggle();
+        }
 
-            //toggle right neighbor
-            if(j!=(n-1)){
-                board[i][j+1].toggle();
-            }
+        //toggle right neighbor
+        if(j!=(n-1)){
+            board[i][j+1].toggle();
+        }
 
-            //toggle top neighbor
-            if(i!=0){
-                board[i-1][j].toggle();
-            }
+        //toggle top neighbor
+        if(i!=0){
+            board[i-1][j].toggle();
+        }
 
-            //toggle bottom neighbor
-            if(i!=(n-1)){
-                board[i+1][j].toggle();
-            }
+        //toggle bottom neighbor
+        if(i!=(n-1)){
+            board[i+1][j].toggle();
         }
     }
 

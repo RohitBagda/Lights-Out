@@ -1,4 +1,6 @@
 import comp124graphics.CanvasWindow;
+import comp124graphics.GraphicsObject;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -578,15 +580,6 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     }
 
     /**
-     * Call a method in the Board class to toggle a Bulb and its neighbors on the game board.
-     * @param x
-     * @param y
-     */
-    private void performBulbToggleOperations(double x, double y){
-        gameBoard.toggleBulb(x,y);
-    }
-
-    /**
      * Call respective methods based on user's selection of button.
      * @param e
      */
@@ -703,8 +696,14 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     public void mouseClicked(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
-        if(!pauseTimerRunning){
-            performBulbToggleOperations(x,y);
+
+        GraphicsObject obj = gameBoard.getElementAt(x,y);
+        if(obj instanceof Bulb ) {
+            Bulb thisBulb = (Bulb) obj;
+
+            if (!pauseTimerRunning) {
+                gameBoard.toggleBulb(thisBulb);
+            }
         }
     }
 
