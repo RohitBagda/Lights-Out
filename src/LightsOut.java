@@ -16,9 +16,11 @@ import java.util.Hashtable;
 public class LightsOut extends CanvasWindow implements MouseListener, ActionListener, MouseWheelListener, KeyListener {
 
 
+    public boolean shouldToggleOnlyNeighbours = false;
     protected Board gameBoard;
     private Timer timer;
     private JFormattedTextField textField;
+    private JButton switchModeButton;
     private JButton userChoiceButton;
     private JButton pause;
     private JButton play;
@@ -173,6 +175,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         addUserChoiceButton(leftGap, secondRowButtonHeight);
         addPauseButton(leftGap+buttonWidth*2+buttonGap + buttonGap, secondRowButtonHeight);
         addPlayButton(leftGap+(buttonWidth)*2+buttonWidth/2 + 2*buttonGap + buttonGap/2, secondRowButtonHeight);
+        addSwitchModeButton(leftGap + (buttonWidth) * 3 + buttonWidth/2 + 3*buttonGap + buttonGap/2, secondRowButtonHeight);
     }
 
     /**
@@ -190,6 +193,18 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         userChoiceButton.addKeyListener(this);
         userChoiceButton.setPreferredSize(new Dimension(buttonWidth,buttonHeight));
         add(userChoiceButton);
+    }
+
+    private void addSwitchModeButton(int x, int y){
+        switchModeButton = new JButton("SwitchGameMode");
+        switchModeButton.setLocation(x, y);
+        switchModeButton.setSize(buttonWidth, buttonHeight);
+        switchModeButton.setText("Toggle Only Neighbours");
+        switchModeButton.setFont(BUTTON_FONT);
+        switchModeButton.addActionListener(this);
+        switchModeButton.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
+        add(switchModeButton);
+
     }
 
     /**
@@ -508,7 +523,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      */
     protected void toggleBulbAndNeighbors(int row, int column){
 
-        gameBoard.getBulbAt(row, column).toggle();
+        //if the current mode of the game is to toggle only neighbours,
+        //then bulb at row, col should not be toggled
+        if (!this.shouldToggleOnlyNeighbours){
+            gameBoard.getBulbAt(row, column).toggle();
+        }
 
         //toggle left neighbor
         if (column != 0){
@@ -582,8 +601,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      * @param x
      * @param y
      */
-    private void performBulbToggleOperations(double x, double y){
-        gameBoard.toggleBulb(x,y);
+    private void performBulbToggleOperations(double x, double y, boolean shouldToggleOnlyNeighbours){
+        gameBoard.toggleBulb(x,y, shouldToggleOnlyNeighbours);
     }
 
     /**
@@ -604,6 +623,19 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
             performPause();
         } else if(cmd.equals("Play")){
             performPlay();
+        } else if (cmd.equals("Toggle Only Neighbours")){
+            performSwitchMode();
+        }
+    }
+
+    private void performSwitchMode(){
+        if (!pauseTimerRunning) {
+            if (!shouldToggleOnlyNeighbours) {
+                switchModeButton.setBackground(new Color(0, 255, 255));
+            } else {
+                switchModeButton.setBackground(new Color(255, 255, 255));
+            }
+            switchMode();
         }
     }
 
@@ -614,8 +646,10 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         remove(gameBoard);
         drawBoard();
         showingSolution=false;
+        setShouldToggleOnlyNeighbours(false);
         timer.stop();
         pause.setEnabled(false);
+        pauseTimerRunning = false;
     }
 
     /**
@@ -623,6 +657,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      */
     private void performVisualize(){
         remove(gameBoard);
+        setShouldToggleOnlyNeighbours(false);
+        switchModeButton.setBackground(new Color(255, 255, 255));
         drawBoard();
         showSolution(solution);
         resetSolutionVectorCounter();
@@ -676,10 +712,13 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      */
     private void performPlay(){
         if(!pauseTimerRunning) {
+            setShouldToggleOnlyNeighbours(false);
+            switchModeButton.setBackground(new Color(255, 255, 255));
             play.setEnabled(false);
             pause.setEnabled(true);
             timer.start();
             pauseTimerRunning = true;
+
         }
     }
 
@@ -704,7 +743,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         int x = e.getX();
         int y = e.getY();
         if(!pauseTimerRunning){
-            performBulbToggleOperations(x,y);
+            performBulbToggleOperations(x,y, shouldToggleOnlyNeighbours);
         }
     }
 
@@ -743,5 +782,13 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+    }
+
+    public void switchMode() {
+        shouldToggleOnlyNeighbours = !shouldToggleOnlyNeighbours;
+    }
+
+    public void setShouldToggleOnlyNeighbours(boolean b){
+        shouldToggleOnlyNeighbours = b;
     }
 }

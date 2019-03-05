@@ -64,11 +64,13 @@ public class Board extends GraphicsGroup{
      * @param x
      * @param y
      */
-    public void toggleBulb(double x, double y){
+    public void toggleBulb(double x, double y, boolean shouldToggleOnlyNeighbours){
         GraphicsObject obj = getElementAt(x,y);
         if(obj instanceof Bulb ){
             Bulb thisBulb = (Bulb)obj;
-            thisBulb.toggle();
+            if (!shouldToggleOnlyNeighbours){
+                thisBulb.toggle();
+            }
             int i = thisBulb.getId() / n;
             int j = thisBulb.getId() % n;
 
