@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
-import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
