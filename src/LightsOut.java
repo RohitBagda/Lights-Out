@@ -455,6 +455,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     private void setupJavaTimer() {
         timer = new Timer(pauseTime, new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+                int solution[] = solvePartialBoard(); // <-- use result of partial solver instead of solution instance variable
+
                 if (pauseTimerRunning && solution[solutionVectorCounter]==1&& solutionVectorCounter <solution.length) {
                     if(solutionIndicator == 0){
                         visualizeMainBulbColor(solution);
@@ -609,15 +611,16 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         showingSolution=false;
         timer.stop();
         pause.setEnabled(false);
+        pauseTimerRunning = false;
     }
 
     /**
      * Visualize Solution
      */
     private void performVisualize(){
-        remove(gameBoard);
-        drawBoard();
-        showSolution(solution);
+        //remove(gameBoard);
+        //drawBoard();
+        showSolution(solvePartialBoard());
         resetSolutionVectorCounter();
         resetMainBulbVectorCounter();
         resetSolutionIndicator();
@@ -631,10 +634,10 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      */
     private void performShowSolution(){
         if(!showingSolution){
-            showSolution(solution);
+            showSolution(solvePartialBoard());
             showingSolution=true;
         } else {
-            undoShowSolution(solution);
+            undoShowSolution(solvePartialBoard());
             showingSolution=false;
         }
     }
@@ -703,6 +706,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
 
             if (!pauseTimerRunning) {
                 gameBoard.toggleBulb(thisBulb);
+
+                thisBulb.setStroked(false);
             }
         }
     }
