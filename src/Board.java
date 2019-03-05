@@ -69,6 +69,10 @@ public class Board extends GraphicsGroup{
         if(obj instanceof Bulb ){
             Bulb thisBulb = (Bulb)obj;
             thisBulb.toggle();
+            if(thisBulb.isSolutionBulb()){
+                thisBulb.setStroked(false);
+            }
+
             int i = thisBulb.getId() / n;
             int j = thisBulb.getId() % n;
 

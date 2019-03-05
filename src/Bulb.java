@@ -10,6 +10,7 @@ public class Bulb extends Rectangle {
 
     private boolean isOn;
     private int id;
+    private boolean isSolutionBulb;
 
     private final Color onColor = Color.getHSBColor(174, 62, 68);
     private final Color offColor = Color.DARK_GRAY;
@@ -52,5 +53,13 @@ public class Bulb extends Rectangle {
 
     protected boolean getIsOn(){
         return isOn;
+    }
+
+    protected void setSolutionBulb(){
+        isSolutionBulb = true;
+    }
+
+    public boolean isSolutionBulb() {
+        return isSolutionBulb;
     }
 }

@@ -347,6 +347,19 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         resetMainBulbVectorCounter();
         calculatePauseTime();
         setupJavaTimer();
+
+        designateSolutionBulbs();
+    }
+
+    private void designateSolutionBulbs(){
+        for(int i = 0; i < solution.length; i++){
+            int row, col;
+            row = i / n;
+            col = i % n;
+            if(solution[i] == 1){
+                gameBoard.getBulbAt(row,col).setSolutionBulb();
+            }
+        }
     }
 
     /**
@@ -423,6 +436,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
                 gameBoard.getBulbAt(row, col).setStrokeColor(Color.RED);
             }
         }
+        this.showingSolution = true;
     }
 
     /**
@@ -437,7 +451,11 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
                 gameBoard.getBulbAt(row, col).setStroked(false);
             }
         }
+
+        this.showingSolution = false;
     }
+
+
 
     /**
      * A Java timer to help visualize the solution. The timer repeats after a particular pause time and performs three
@@ -509,7 +527,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     private void toggleBulbAndNeighbors(int row, int column){
 
         gameBoard.getBulbAt(row, column).toggle();
-
+        
         //toggle left neighbor
         if (column != 0){
             gameBoard.getBulbAt(row, column-1).toggle();
@@ -616,6 +634,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         showingSolution=false;
         timer.stop();
         pause.setEnabled(false);
+        designateSolutionBulbs();
     }
 
     /**
@@ -631,6 +650,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         pauseTimerRunning=true;
         timer.start();
         pause.setEnabled(true);
+
+        this.showingSolution = true;
     }
 
     /**
