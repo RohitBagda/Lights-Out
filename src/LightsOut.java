@@ -1,12 +1,18 @@
 import comp124graphics.CanvasWindow;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.NumberFormatter;
+import java.applet.AudioClip;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.Hashtable;
+
 
 /**
  * Created by Katya Kelly, Chukwubueze Hosea Ogeleka, and Rohit Bagda on 11/25/2017.
@@ -22,6 +28,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     private JButton userChoiceButton;
     private JButton pause;
     private JButton play;
+    private JButton sound;
 
     protected int n;
     private double boardLength;
@@ -41,6 +48,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
     private int currentSliderValue;
     private boolean pauseTimerRunning;
     private boolean showingSolution;
+    private boolean soundOn;
 
     private final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     private final int SCREEN_WIDTH=(int)(SCREEN_SIZE.getWidth());
@@ -89,6 +97,7 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         topGap = SCREEN_WIDTH/256;
         pauseTimerRunning = false;
         showingSolution = false;
+        soundOn = true;
         solutionIndicator = 0;
         leftGap = (canvasWidth/2)-(buttonWidth/2)-buttonWidth - buttonGap;
     }
@@ -173,6 +182,18 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
         addUserChoiceButton(leftGap, secondRowButtonHeight);
         addPauseButton(leftGap+buttonWidth*2+buttonGap + buttonGap, secondRowButtonHeight);
         addPlayButton(leftGap+(buttonWidth)*2+buttonWidth/2 + 2*buttonGap + buttonGap/2, secondRowButtonHeight);
+        addSoundButton(leftGap+buttonWidth*3+3*buttonGap, firstRowButtonHeight);
+    }
+
+    private void addSoundButton(int x, int y){
+        JButton sound = new JButton("Sound");
+        sound.setLocation(x, y);
+        sound.setSize(buttonWidth,buttonHeight);
+        sound.setText("Sound");
+        sound.setFont(BUTTON_FONT);
+        sound.addActionListener(this);
+        sound.setPreferredSize(new Dimension(buttonWidth,buttonHeight));
+        add(sound);
     }
 
     /**
@@ -583,7 +604,19 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
      * @param y
      */
     private void performBulbToggleOperations(double x, double y){
+        if(soundOn){
+
+            try{
+                InputStream inputStream = getClass().getResourceAsStream("sound.wav");
+                AudioStream audioStream = new AudioStream(inputStream);
+                AudioPlayer.player.start(audioStream);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         gameBoard.toggleBulb(x,y);
+
     }
 
     /**
@@ -604,6 +637,8 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
             performPause();
         } else if(cmd.equals("Play")){
             performPlay();
+        } else if(cmd.equals("Sound")){
+            toggleSound();
         }
     }
 
@@ -668,6 +703,14 @@ public class LightsOut extends CanvasWindow implements MouseListener, ActionList
             pause.setEnabled(false);
             play.setEnabled(true);
             pauseTimerRunning = false;
+        }
+    }
+
+    private void toggleSound(){
+        if(soundOn){
+            soundOn = false;
+        } else {
+            soundOn = true;
         }
     }
 
